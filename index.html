@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Tooltip plugin for Chartist.js</title>
+    <meta name="description" content="Tooltip plugin for Chartist.js">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/chartist/0.9.0/chartist.min.css">
+  </head>
+  <body>
+    <div class="ct-chart"></div>
+
+    <script src="/chartist-js/dist/chartist.js"></script>
+    <script src="/js/chartist-plugin-line-tooltip.js"></script>
+
+    <script>
+      new Chartist.Line('.ct-chart', {
+        labels: ['1', '2', '3', '4', '5', '6'],
+        series: [
+          {
+            name: 'Fibonacci sequence',
+            data: [1, 2, 3, 5, 8, 13]
+          }
+          // ,{
+          //   name: 'Golden section',
+          //   data: [1, 1.618, 2.618, 4.236, 6.854, 11.09]
+          // }
+        ]
+      }, {
+        plugins: [
+          Chartist.plugins.lineTooltip()
+        ]
+      });
+    </script>
+  </body>
+</html>
