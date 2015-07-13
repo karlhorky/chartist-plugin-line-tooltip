@@ -11,11 +11,6 @@
   var defaultOptions = {
   };
 
-  // var arrayify = function(nodelist) {
-  //   return Array.prototype.slice.call(nodelist);
-  // };
-
-
   Chartist.plugins = Chartist.plugins || {};
 
   Chartist.plugins.lineTooltip = function (options) {
