@@ -9,6 +9,34 @@
   'use strict';
 
   var defaultOptions = {
+    createTooltip    : createTooltip,
+    createSeriesLabel: createSeriesLabel
+  };
+
+
+  function createTooltip (options) {
+    var tooltip = document.createElement('div');
+
+    tooltip.innerHTML = '\
+      <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
+      <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
+        <div class="ct-tooltip-title">' + options.label + '</div>\
+      </div>';
+
+    return tooltip;
+  };
+
+  function createSeriesLabel (options) {
+    var seriesLabel = document.createElement('div');
+
+    seriesLabel.setAttribute('class', 'ct-tooltip-series-label');
+    seriesLabel.innerHTML = '\
+      <span class="ct-tooltip-legend ct-tooltip-legend-' + options.idAlpha + '"></span>\
+      <span class="ct-tooltip-label">\
+        ' + options.label + '\
+      </span>';
+
+    return seriesLabel;
   };
 
   Chartist.plugins = Chartist.plugins || {};
@@ -77,31 +105,6 @@
         return getOffset(point.element._node);
       };
 
-      var createTooltip = function (options) {
-        var tooltip = document.createElement('div');
-
-        tooltip.innerHTML = '\
-          <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
-          <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
-            <div class="ct-tooltip-title"></div>\
-          </div>';
-
-        return tooltip;
-      };
-
-      var createSeriesLabel = function (options) {
-        var seriesLabel = document.createElement('div');
-
-        seriesLabel.setAttribute('class', 'ct-tooltip-series-label');
-        seriesLabel.innerHTML = '\
-          <span class="ct-tooltip-legend ct-tooltip-legend-' + options.seriesLetter + '"></span>\
-          <span class="ct-tooltip-label">\
-            ' + options.label + '\
-          </span>';
-
-        return seriesLabel;
-      };
-
       var createTooltips = function (data) {
         var tooltipsContainer = document.createElement('div');
         tooltipsContainer.setAttribute('class', 'ct-tooltips');
@@ -111,17 +114,17 @@
           tooltip,
           seriesLabel;
 
-        data.forEach(function (series, s) {
-          tooltipContainer = createTooltip({
-            id: s
-          });
+        data.forEach(function (tooltipData, s) {
+          tooltipData.id = s;
+          tooltipContainer = options.createTooltip(tooltipData);
 
           tooltip = tooltipContainer.querySelector('.ct-tooltip');
 
-          series.forEach(function (value, i) {
-            seriesLabel = createSeriesLabel({
-              label       : value,
-              seriesLetter: String.fromCharCode(97 + i)
+          tooltipData.series.forEach(function (value, i) {
+            seriesLabel = options.createSeriesLabel({
+              id     : i,
+              idAlpha: String.fromCharCode(97 + i),
+              label  : value
             });
 
             tooltip.appendChild(seriesLabel);
@@ -177,8 +180,10 @@
 
         data.data.series.forEach(function (series, s) {
           series.data.forEach(function (value, i) {
-            tooltipData[i] = tooltipData[i] || [];
-            tooltipData[i][s] = value;
+            tooltipData[i] = tooltipData[i] || {};
+            tooltipData[i].label = data.data.labels[i];
+            tooltipData[i].series = tooltipData[i].series || [];
+            tooltipData[i].series[s] = value;
           })
         })
 

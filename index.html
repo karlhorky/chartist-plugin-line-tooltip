@@ -11,7 +11,7 @@
   </head>
 
   <body>
-    <br><br><br>
+    <br><br><br><br><br>
     <div class="ct-chart"></div>
 
     <script src="chartist-js/dist/chartist.js"></script>
@@ -32,7 +32,18 @@
         ]
       }, {
         plugins: [
-          Chartist.plugins.lineTooltip()
+          Chartist.plugins.lineTooltip({
+            createTooltip: function (options) {
+              var tooltip = document.createElement('div');
+
+              tooltip.innerHTML = '\
+                <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
+                <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
+                </div>';
+
+              return tooltip;
+            }
+          })
         ]
       });
     </script>

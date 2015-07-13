@@ -18,6 +18,11 @@
   border-top-color: #f4c63d;
 }
 
+.ct-tooltip-title {
+  text-align: center;
+  font-size: 1.2em;
+}
+
 .ct-tooltip-legend,
 .ct-tooltip-label {
   vertical-align: middle;
