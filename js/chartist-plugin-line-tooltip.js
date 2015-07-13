@@ -77,78 +77,62 @@
         return getOffset(point.element._node);
       };
 
-      var getTooltip = function (options) {
-        var tooltipEl = document.createElement('div');
-        tooltipEl.innerHTML = options.content;
+      var createTooltip = function (options) {
+        var tooltip = document.createElement('div');
 
-        tooltipEl.setAttribute('class', 'ct-tooltip');
-        tooltipEl.setAttribute('id', 'ct-tooltip-' + options.id);
+        tooltip.innerHTML = '\
+          <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
+          <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
+            <div class="ct-tooltip-title"></div>\
+          </div>';
 
-        return tooltipEl;
+        return tooltip;
       };
 
-      var getTooltipContents = function (seriesArray) {
-        var
-          contents = [],
-          legends = [];
+      var createSeriesLabel = function (options) {
+        var seriesLabel = document.createElement('div');
 
-        if (seriesArray.length > 1) {
-          legends = seriesArray.map(function (series, i) {
-            return '<span class="ct-tooltip-legend ct-tooltip-legend-' + String.fromCharCode(97 + i) + '"></span>';
-          });
-        }
+        seriesLabel.setAttribute('class', 'ct-tooltip-series-label');
+        seriesLabel.innerHTML = '\
+          <span class="ct-tooltip-legend ct-tooltip-legend-' + options.seriesLetter + '"></span>\
+          <span class="ct-tooltip-label">\
+            ' + options.label + '\
+          </span>';
 
-        seriesArray.forEach(function(series, s) {
-          var legend = legends[s] || '';
-
-          series.data.forEach(function (value, i) {
-            contents[i] = (contents[i] || '') +
-              '<div class="ct-tooltip-caption-line ct-tooltip-caption-line-' + i + '">' +
-                legend +
-                '<span class="ct-tooltip-caption-value">' +
-                  value +
-                '</span>' +
-              '</div>';
-          });
-        });
-
-        return contents;
-      };
-
-      var getHoverEl = function (options) {
-        var hoverEl = document.createElement('div');
-
-        hoverEl.setAttribute('class', 'ct-tooltip-hover');
-        hoverEl.setAttribute('id', 'ct-tooltip-hover-' + options.id);
-
-        return hoverEl;
+        return seriesLabel;
       };
 
       var createTooltips = function (data) {
-        var container = document.createElement('div');
-        container.setAttribute('class', 'ct-tooltips');
+        var tooltipsContainer = document.createElement('div');
+        tooltipsContainer.setAttribute('class', 'ct-tooltips');
 
         var
-          hoverEl,
+          tooltipContainer,
           tooltip,
-          tooltipContents = getTooltipContents(data.data.series);
+          seriesLabel;
 
-        tooltipContents.forEach(function (content, i) {
-          hoverEls[i] = hoverEl = getHoverEl({
-            id: i
+        data.forEach(function (series, s) {
+          tooltipContainer = createTooltip({
+            id: s
           });
 
-          container.appendChild(hoverEl);
+          tooltip = tooltipContainer.querySelector('.ct-tooltip');
 
-          tooltips[i] = tooltip = getTooltip({
-            id     : i,
-            content: content
+          series.forEach(function (value, i) {
+            seriesLabel = createSeriesLabel({
+              label       : value,
+              seriesLetter: String.fromCharCode(97 + i)
+            });
+
+            tooltip.appendChild(seriesLabel);
           });
 
-          container.appendChild(tooltip);
+          hoverEls[s] = tooltipContainer.querySelector('.ct-tooltip-hover');
+          tooltips[s] = tooltip;
+          tooltipsContainer.appendChild(tooltipContainer);
         });
 
-        document.querySelector('body').appendChild(container);
+        document.querySelector('body').appendChild(tooltipsContainer);
       };
 
       var positionHoverEl = function (hoverEl, point, width) {
@@ -189,14 +173,22 @@
       addStyles(tooltipStyles);
 
       chart.on('data', function (data) {
-        createTooltips(data);
+        var tooltipData = [];
+
+        data.data.series.forEach(function (series, s) {
+          series.data.forEach(function (value, i) {
+            tooltipData[i] = tooltipData[i] || [];
+            tooltipData[i][s] = value;
+          })
+        })
+
+        createTooltips(tooltipData);
       });
 
       chart.on('draw', function (data) {
         if (data.type === 'point') {
           points[data.index] = points[data.index] || [];
           points[data.index].push(data);
-          console.log(data);
         }
       });
 
