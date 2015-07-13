@@ -87,7 +87,9 @@
           stylesheet.appendChild(document.createTextNode(css));
         }
 
-        return document.querySelector('head').appendChild(stylesheet);
+        var head = document.querySelector('head');
+
+        return head.insertBefore(stylesheet, head.firstChild);
       };
 
       var getOffset = function (el) {
