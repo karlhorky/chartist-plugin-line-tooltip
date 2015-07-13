@@ -121,8 +121,7 @@
       var getTooltipContents = function (seriesArray) {
         var
           contents = [],
-          legends = [],
-          series;
+          legends = [];
 
         if (seriesArray.length > 1) {
           legends = seriesArray.map(function (series, i) {
@@ -240,8 +239,6 @@
         } else {
           width = points[1][0].x - points[0][0].x;
         }
-
-        var tooltipPositions = [];
 
         points.forEach(function (pointSet) {
           var point = pointSet.sort(function (a, b) {
