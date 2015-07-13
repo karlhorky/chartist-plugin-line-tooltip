@@ -9,24 +9,25 @@
   'use strict';
 
   var defaultOptions = {
-    createTooltip    : createTooltip,
-    createSeriesLabel: createSeriesLabel
+    appendTooltipContent: appendTooltipContent,
+    createSeriesLabel   : createSeriesLabel
   };
 
+  function appendTooltipContent (tooltip, data, pluginOptions) {
+    var seriesLabel;
 
-  function createTooltip (options) {
-    var tooltip = document.createElement('div');
+    data.series.forEach(function (value, i) {
+      seriesLabel = pluginOptions.createSeriesLabel({
+        id     : i,
+        idAlpha: String.fromCharCode(97 + i),
+        label  : value
+      }, pluginOptions);
 
-    tooltip.innerHTML = '\
-      <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
-      <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
-        <div class="ct-tooltip-title">' + options.label + '</div>\
-      </div>';
-
-    return tooltip;
+      tooltip.appendChild(seriesLabel);
+    });
   };
 
-  function createSeriesLabel (options) {
+  function createSeriesLabel (options, pluginOptions) {
     var seriesLabel = document.createElement('div');
 
     seriesLabel.setAttribute('class', 'ct-tooltip-series-label');
@@ -42,7 +43,7 @@
   Chartist.plugins = Chartist.plugins || {};
 
   Chartist.plugins.lineTooltip = function (options) {
-    options = Chartist.extend({}, defaultOptions, options);
+    var pluginOptions = Chartist.extend({}, defaultOptions, options);
 
     return function plugin (chart) {
       if (!(chart instanceof Chartist.Line)) { return; }
@@ -105,6 +106,16 @@
         return getOffset(point.element._node);
       };
 
+      var createTooltip = function (options) {
+        var tooltip = document.createElement('div');
+
+        tooltip.innerHTML = '\
+          <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
+          <div class="ct-tooltip" id="ct-tooltip-' + options.id + '"></div>';
+
+        return tooltip;
+      };
+
       var createTooltips = function (data) {
         var tooltipsContainer = document.createElement('div');
         tooltipsContainer.setAttribute('class', 'ct-tooltips');
@@ -116,19 +127,10 @@
 
         data.forEach(function (tooltipData, s) {
           tooltipData.id = s;
-          tooltipContainer = options.createTooltip(tooltipData);
+          tooltipContainer = createTooltip(tooltipData);
 
           tooltip = tooltipContainer.querySelector('.ct-tooltip');
-
-          tooltipData.series.forEach(function (value, i) {
-            seriesLabel = options.createSeriesLabel({
-              id     : i,
-              idAlpha: String.fromCharCode(97 + i),
-              label  : value
-            });
-
-            tooltip.appendChild(seriesLabel);
-          });
+          pluginOptions.appendTooltipContent(tooltip, tooltipData, pluginOptions);
 
           hoverEls[s] = tooltipContainer.querySelector('.ct-tooltip-hover');
           tooltips[s] = tooltip;

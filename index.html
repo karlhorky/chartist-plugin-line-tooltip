@@ -33,15 +33,35 @@
       }, {
         plugins: [
           Chartist.plugins.lineTooltip({
-            createTooltip: function (options) {
-              var tooltip = document.createElement('div');
+            appendTooltipContent: function (tooltip, data, pluginOptions) {
+              var title = document.createElement('div');
+              title.setAttribute('class', 'ct-tooltip-title');
+              title.innerHTML = data.label;
+              tooltip.appendChild(title);
 
-              tooltip.innerHTML = '\
-                <div class="ct-tooltip-hover" id="ct-tooltip-hover-' + options.id + '"></div>\
-                <div class="ct-tooltip" id="ct-tooltip-' + options.id + '">\
-                </div>';
+              var seriesLabel;
 
-              return tooltip;
+              data.series.forEach(function (value, i) {
+                seriesLabel = pluginOptions.createSeriesLabel({
+                  id     : i,
+                  idAlpha: String.fromCharCode(97 + i),
+                  label  : value
+                }, pluginOptions);
+
+                tooltip.appendChild(seriesLabel);
+              });
+            },
+            createSeriesLabel: function (options, pluginOptions) {
+              var seriesLabel = document.createElement('div');
+
+              seriesLabel.setAttribute('class', 'ct-tooltip-series-label');
+              seriesLabel.innerHTML = '\
+                <span class="ct-tooltip-legend ct-tooltip-legend-' + options.idAlpha + '"></span>\
+                <span class="ct-tooltip-label">\
+                  ' + options.label + '\
+                </span> (' + options.id + ')';
+
+              return seriesLabel;
             }
           })
         ]
