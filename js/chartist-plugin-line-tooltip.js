@@ -26,55 +26,24 @@
         tooltipStyles;
 
       tooltipStyles =
-        '.ct-tooltip-hover {' +
-        'position: absolute;' +
-        'z-index: 10000;' +
-        '}' +
-        '.ct-tooltip {' +
-        'position: absolute;' +
-        'display: inline-block;' +
-        'min-width: 5em;' +
-        'padding: .4em .75em;' +
-        'background: #f4c63d;' +
-        'color: #453d3f;' +
-        'z-index: 1;' +
-        'opacity: 0;' +
-        '-webkit-transition: opacity .15s;' +
-        '-o-transition: opacity .15s;' +
-        'transition: opacity .15s;' +
-        '}' +
-        '.ct-tooltip-hover:hover + .ct-tooltip {' +
-        'opacity: 1;' +
-        '}' +
-        '.ct-tooltip:after {' +
-        'content: "";' +
-        'position: absolute;' +
-        'top: 100%;' +
-        'left: 50%;' +
-        'width: 0;' +
-        'height: 0;' +
-        'margin-left: -15px;' +
-        'border: 15px solid transparent;' +
-        'border-top-color: #f4c63d;' +
-        '}' +
-        '.ct-tooltip-legend,' +
-        '.ct-tooltip-caption-value {' +
-        'vertical-align: middle;' +
-        '}' +
-        '.ct-tooltip-legend {' +
-        'display: inline-block;' +
-        'width: 6px;' +
-        'height: 6px;' +
-        'margin-right: 4px;' +
-        'border: 1px solid #453d3f;' +
-        'border-radius: 2px;' +
-        '}' +
-        '.ct-tooltip-legend-a {' +
-        'background: #d70206;' +
-        '}' +
-        '.ct-tooltip-legend-b {' +
-        'background: #f05b4f;' +
-        '}';
+        '.ct-tooltip-hover {\
+          position: absolute;\
+          z-index: 10000;\
+        }\
+        \
+        .ct-tooltip {\
+          position: absolute;\
+          z-index: 1;\
+          opacity: 0;\
+          background: #ddd;\
+          -webkit-transition: opacity .15s;\
+          -o-transition: opacity .15s;\
+          transition: opacity .15s;\
+        }\
+        \
+        .ct-tooltip-hover:hover + .ct-tooltip {\
+          opacity: 1;\
+        }';
 
       var addStyles = function (css) {
         var stylesheet = document.createElement('style');
