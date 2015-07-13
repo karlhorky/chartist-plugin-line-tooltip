@@ -1,0 +1,15 @@
+{
+  "browser": true,
+  "multistr": true,
+  "camelcase": true,
+  "immed": true,
+  "newcap": true,
+  "quotmark": "single",
+  "undef": true,
+  "unused": true,
+  "strict": true,
+  "globals": {
+    "Chartist": false,
+    "console": false
+  }
+}
