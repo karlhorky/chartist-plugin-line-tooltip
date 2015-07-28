@@ -142,7 +142,7 @@
         var tooltipData = [];
 
         data.data.series.forEach(function (series, s) {
-          series.data.forEach(function (value, i) {
+          series.forEach(function (value, i) {
             tooltipData[i] = tooltipData[i] || {};
             tooltipData[i].label = data.data.labels[i];
             tooltipData[i].series = tooltipData[i].series || [];
@@ -154,6 +154,8 @@
       });
 
       chart.on('draw', function (data) {
+        // In order to create the hover areas for the tooltip,
+        // the `showPoint` Chartist option needs to be set to `true`
         if (data.type === 'point') {
           points[data.index] = points[data.index] || [];
           points[data.index].push(data);
