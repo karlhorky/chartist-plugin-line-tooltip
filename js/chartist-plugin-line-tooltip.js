@@ -51,7 +51,44 @@
       var
         points   = [],
         tooltips = [],
-        hoverEls = [];
+        hoverEls = [],
+        tooltipStyles;
+
+      tooltipStyles =
+        '.ct-tooltip-hover {\
+          position: absolute;\
+          z-index: 10000;\
+        }\
+        \
+        .ct-tooltip {\
+          position: absolute;\
+          z-index: 1;\
+          opacity: 0;\
+          background: #ddd;\
+          -webkit-transition: opacity .15s;\
+          -o-transition: opacity .15s;\
+          transition: opacity .15s;\
+        }\
+        \
+        .ct-tooltip-hover:hover + .ct-tooltip {\
+          opacity: 1;\
+        }';
+
+      var addStyles = function (css) {
+        var stylesheet = document.createElement('style');
+
+        if (stylesheet.styleSheet){
+          // IE
+          stylesheet.styleSheet.cssText = css;
+        } else {
+          // W3C Standard
+          stylesheet.appendChild(document.createTextNode(css));
+        }
+
+        var head = document.querySelector('head');
+
+        return head.insertBefore(stylesheet, head.firstChild);
+      };
 
       var getOffset = function (el) {
         var docEl = document.documentElement;
@@ -137,6 +174,8 @@
         tooltip.style.left = (pointPosition.left - tooltipSize.width / 2) + 'px';
         tooltip.style.top  = (pointPosition.top - tooltipSize.height) + 'px';
       };
+
+      addStyles(tooltipStyles);
 
       chart.on('data', function (data) {
         var tooltipData = [];
