@@ -48,11 +48,11 @@
     return function plugin (chart) {
       if (!(chart instanceof Chartist.Line)) { return; }
 
-      var
-        points   = [],
-        tooltips = [],
-        hoverEls = [],
-        tooltipStyles;
+      var points      = [],
+          tooltips    = [],
+          hoverEls    = [],
+          tooltipData = [],
+          tooltipStyles;
 
       tooltipStyles =
         '.ct-tooltip-hover {\
@@ -91,10 +91,10 @@
       };
 
       var getOffset = function (el) {
-        var docEl = document.documentElement;
-        var boundingRect = el.getBoundingClientRect();
-        var top = boundingRect.top + window.pageYOffset - docEl.clientTop;
-        var left = boundingRect.left + window.pageXOffset - docEl.clientLeft;
+        var parentBoundingRect = chart.container.getBoundingClientRect();
+        var elBoundingRect = el.getBoundingClientRect();
+        var top = elBoundingRect.top - parentBoundingRect.top;
+        var left = elBoundingRect.left - parentBoundingRect.left;
 
         return {
           top: top,
@@ -117,8 +117,11 @@
       };
 
       var createTooltips = function (data) {
-        var tooltipsContainer = document.createElement('div');
-        tooltipsContainer.setAttribute('class', 'ct-tooltips');
+        var tooltipsContainer = chart.container;
+        var tooltipsWrapper = document.createElement('div');
+
+        tooltipsContainer.style.position = 'relative';
+        tooltipsWrapper.setAttribute('class', 'ct-tooltips');
 
         var
           tooltipContainer,
@@ -134,10 +137,10 @@
 
           hoverEls[s] = tooltipContainer.querySelector('.ct-tooltip-hover');
           tooltips[s] = tooltip;
-          tooltipsContainer.appendChild(tooltipContainer);
+          tooltipsWrapper.appendChild(tooltipContainer);
         });
 
-        document.querySelector('body').appendChild(tooltipsContainer);
+        tooltipsContainer.appendChild(tooltipsWrapper);
       };
 
       var positionHoverEl = function (hoverEl, point, width) {
@@ -168,7 +171,7 @@
             height: tooltip.offsetHeight
           };
 
-        // Arrow
+        // Tooltip bottom arrow height
         tooltipSize.height += 21;
 
         tooltip.style.left = (pointPosition.left - tooltipSize.width / 2) + 'px';
@@ -178,8 +181,6 @@
       addStyles(tooltipStyles);
 
       chart.on('data', function (data) {
-        var tooltipData = [];
-
         data.data.series.forEach(function (series, s) {
           series.forEach(function (value, i) {
             tooltipData[i] = tooltipData[i] || {};
@@ -188,13 +189,10 @@
             tooltipData[i].series[s] = value;
           })
         })
-
-        createTooltips(tooltipData);
       });
 
       chart.on('draw', function (data) {
-        // In order to create the hover areas for the tooltip,
-        // the `showPoint` Chartist option needs to be set to `true`
+        // showPoint needs to be true in chart options
         if (data.type === 'point') {
           points[data.index] = points[data.index] || [];
           points[data.index].push(data);
@@ -209,6 +207,8 @@
         } else {
           width = points[1][0].x - points[0][0].x;
         }
+
+        createTooltips(tooltipData);
 
         points.forEach(function (pointSet) {
           var point = pointSet.sort(function (a, b) {
