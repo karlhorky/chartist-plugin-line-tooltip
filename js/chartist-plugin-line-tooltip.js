@@ -54,6 +54,9 @@
           tooltipData = [],
           tooltipStyles;
 
+      // Positioning of elements is done relative to container
+      chart.container.style.position = 'relative';
+
       tooltipStyles =
         '.ct-tooltip-hover {\
           position: absolute;\
@@ -88,22 +91,6 @@
         var head = document.querySelector('head');
 
         return head.insertBefore(stylesheet, head.firstChild);
-      };
-
-      var getOffset = function (el) {
-        var parentBoundingRect = chart.container.getBoundingClientRect();
-        var elBoundingRect = el.getBoundingClientRect();
-        var top = elBoundingRect.top - parentBoundingRect.top;
-        var left = elBoundingRect.left - parentBoundingRect.left;
-
-        return {
-          top: top,
-          left: left
-        };
-      };
-
-      var getPointOffset = function (point) {
-        return getOffset(point.element._node);
       };
 
       var createTooltip = function (options) {
@@ -145,37 +132,28 @@
 
       var positionHoverEl = function (hoverEl, point, width) {
         var
-          pointPosition = getPointOffset(point),
-          chartPosition = getOffset(chart.container),
+          containerRect = chart.container.getBoundingClientRect(),
+          pointRect     = point.element._node.getBoundingClientRect(),
           height        = chart.container.offsetHeight,
-          left          = Math.floor(pointPosition.left - (width / 2));
-
-        width = Math.ceil(width);
-
-        if (left < chartPosition.left) {
-          width += (left - chartPosition.left);
-          left = chartPosition.left;
-        }
+          left          = Math.floor(pointRect.left - containerRect.left - width / 2),
+          top           = 0;
 
         hoverEl.style.left   = left + 'px';
-        hoverEl.style.top    = chartPosition.top + 'px';
+        hoverEl.style.top    = top + 'px';
         hoverEl.style.width  = width + 'px';
         hoverEl.style.height = height + 'px';
       };
 
       var positionTooltip = function (tooltip, point) {
         var
-          pointPosition = getPointOffset(point),
-          tooltipSize   = {
-            width : tooltip.offsetWidth,
-            height: tooltip.offsetHeight
-          };
+          containerRect = chart.container.getBoundingClientRect(),
+          pointRect = point.element._node.getBoundingClientRect(),
+          left = pointRect.left - containerRect.left,
+          top = pointRect.top - containerRect.top,
+          extraHeight = 21; // Tooltip bottom arrow + extra space
 
-        // Tooltip bottom arrow height
-        tooltipSize.height += 21;
-
-        tooltip.style.left = (pointPosition.left - tooltipSize.width / 2) + 'px';
-        tooltip.style.top  = (pointPosition.top - tooltipSize.height) + 'px';
+        tooltip.style.left = (left - tooltip.offsetWidth / 2) + 'px';
+        tooltip.style.top  = (top - tooltip.offsetHeight - extraHeight) + 'px';
       };
 
       addStyles(tooltipStyles);
